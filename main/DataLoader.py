@@ -15,9 +15,10 @@ class Sales:
     @property
     def getData(self):
         """Load sales data from lidl website"""
-
+        self.productList = []
+        self.priceList = []
+        self.itemCount = 0
         src = requests.get("https://www.lidl.fi/tarjoukset").text
-        print("loaded")
 
         soup = BeautifulSoup(src, "lxml")
 
@@ -72,14 +73,15 @@ class Sales:
     def displayAllItems(self):
         """Returns with all of the items in a sales list"""
         for (item, price) in zip(self.productList, self.priceList):
-            print(item + " - " + price)
+            print(str(item + " - " + price))
 
 
-def main():
+def _test():
     sales = Sales()
-    sales.getData()
+    sales.getData
+    print(sales.getItemCount)
     sales.displayAllItems
 
 
 if __name__ == "__main__":
-    main()
+    _test()
