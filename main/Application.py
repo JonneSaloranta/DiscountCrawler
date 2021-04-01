@@ -29,7 +29,7 @@ class Application:
         selectedFrame = tk.Frame(root, bg="#38598f")
         selectedFrame.place(relwidth=0.5, relheight=1, relx=0.5)
 
-        label = tk.Label(root, text="Text")
+        label = tk.Label(selectedFrame, text="Text")
         label.pack()
 
         openFile = tk.Button(
