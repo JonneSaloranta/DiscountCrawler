@@ -10,6 +10,7 @@ __pycache__/
 sorter_env
 launch.json
 settings.json
+.vscode
 
 # Distribution / packaging
 .Python

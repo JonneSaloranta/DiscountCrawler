@@ -3,6 +3,7 @@ import requests
 import tkinter as tk
 import os
 from DataLoader import Sales
+import time
 
 
 class Application:
@@ -12,14 +13,27 @@ class Application:
         self.height = height
         self.title = title
 
+    def load_timer(original_function):
+        import time
+
+        def wrapper(*args, **kwargs):
+            t1 = time.time()
+            result = original_function(*args, **kwargs)
+            t2 = time.time() - t1
+            print(f"{original_function.__name__} ran in: {t2} sec")
+            return result
+
+        return wrapper
+
+    @load_timer
     def reloadData(self):
         self.sales.getData
         print(f"Loaded {self.sales.getItemCount} items")
 
     def window(self):
 
+        self.reloadData()
         sales = self.sales
-        sales.getData
 
         root = tk.Tk()
         root.title(self.title)
@@ -28,7 +42,7 @@ class Application:
         root.update_idletasks()
         root.bind("<Escape>", lambda x: root.destroy())
 
-        canvas = tk.Canvas(root, width=self.width, height=self.height, bg="#293b59")
+        canvas = tk.Canvas(root, bg="#293b59")
         canvas.pack()
         canvas.update_idletasks()
 
@@ -37,13 +51,17 @@ class Application:
 
         itemFrame.update_idletasks()
 
-        selectedFrame = tk.Frame(root, bg="#38598f", borderwidth=10)
+        selectedFrame = tk.Frame(root, bg="#38598f")
         selectedFrame.place(relwidth=0.5, relheight=1, relx=0.5)
         selectedFrame.update_idletasks()
 
         label = tk.Label(itemFrame, text="All sales items")
-        label.pack(ipadx=200, padx=15, pady=15)
+        label.pack(padx=15, pady=15)
         label.update_idletasks()
+
+        label1 = tk.Label(selectedFrame, text="All selected items")
+        label1.pack(padx=15, pady=15)
+        label1.update_idletasks()
 
         listBox = tk.Listbox(
             itemFrame,
@@ -57,16 +75,80 @@ class Application:
         listBox.pack(padx=15, pady=15, side=tk.TOP)
         listBox.update_idletasks()
 
-        for i in range(sales.getItemCount):
-            listBox.insert(
-                tk.END, str(sales.getItemName(i) + " - " + sales.getItemPrice(i) + "€")
-            )
+        selBox = tk.Listbox(
+            selectedFrame,
+            width=selectedFrame.winfo_width(),
+            height=int(selectedFrame.winfo_height() / 40),
+            selectmode=tk.MULTIPLE,
+            font=("TkDefaultFont", 12),
+            activestyle="none",
+            borderwidth=3,
+        )
+        selBox.pack(padx=15, pady=15, side=tk.TOP)
+        selBox.update_idletasks()
+
+        def addToList():
+            listBox.delete(0, tk.END)
+            for i in range(sales.getItemCount):
+                listBox.insert(
+                    tk.END,
+                    str(sales.getItemName(i) + " - " + sales.getItemPrice(i) + "€"),
+                )
+            print("added")
+
+        addToList()
+
+        def reloadList():
+            reloadData()
+            addToList()
 
         btn = tk.Button(
-            itemFrame, text="Refresh data", command=lambda: self.reloadData()
+            itemFrame,
+            text="Deselect all",
+            relief=tk.GROOVE,
+            command=lambda: listBox.selection_clear(0, tk.END),
         )
-        btn.pack()
+        btn.pack(
+            fill="x",
+            padx=15,
+            pady=10,
+            ipadx=15,
+            ipady=15,
+            in_=itemFrame,
+        )
         btn.update_idletasks()
+
+        btn1 = tk.Button(
+            itemFrame,
+            text="Delete data",
+            relief=tk.GROOVE,
+            command=lambda: listBox.delete(0, tk.END),
+        )
+        btn1.pack(
+            fill="x",
+            padx=15,
+            pady=10,
+            ipadx=15,
+            ipady=15,
+            in_=itemFrame,
+        )
+        btn1.update_idletasks()
+
+        btn2 = tk.Button(
+            itemFrame,
+            text="Refresh data",
+            relief=tk.GROOVE,
+            command=lambda: [self.reloadData(), addToList()],
+        )
+        btn2.pack(
+            fill="x",
+            padx=15,
+            pady=10,
+            ipadx=15,
+            ipady=15,
+            in_=itemFrame,
+        )
+        btn2.update_idletasks()
 
         root.mainloop()
 
