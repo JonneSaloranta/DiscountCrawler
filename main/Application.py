@@ -2,13 +2,13 @@ from bs4 import BeautifulSoup
 import requests
 import tkinter as tk
 import os
-from DataLoader import Sales
+from DataLoader import Discounts
 import time
 
 
 class Application:
     def __init__(self, width, height, title):
-        self.sales = Sales()
+        self.disc = Discounts()
         self.width = width
         self.height = height
         self.title = title
@@ -27,13 +27,13 @@ class Application:
 
     @load_timer
     def reloadData(self):
-        self.sales.getData
-        print(f"Loaded {self.sales.getItemCount} items")
+        self.disc.getData
+        print(f"Loaded {self.disc.getItemCount} items")
 
     def window(self):
 
         self.reloadData()
-        sales = self.sales
+        disc = self.disc
 
         root = tk.Tk()
         root.title(self.title)
@@ -55,7 +55,7 @@ class Application:
         selectedFrame.place(relwidth=0.5, relheight=1, relx=0.5)
         selectedFrame.update_idletasks()
 
-        label = tk.Label(itemFrame, text="All sales items")
+        label = tk.Label(itemFrame, text="All discount items")
         label.pack(padx=15, pady=15)
         label.update_idletasks()
 
@@ -89,10 +89,10 @@ class Application:
 
         def addToList():
             listBox.delete(0, tk.END)
-            for i in range(sales.getItemCount):
+            for i in range(disc.getItemCount):
                 listBox.insert(
                     tk.END,
-                    str(sales.getItemName(i) + " - " + sales.getItemPrice(i) + "€"),
+                    str(disc.getItemName(i) + " - " + disc.getItemPrice(i) + "€"),
                 )
             print("added")
 
@@ -150,11 +150,14 @@ class Application:
         )
         btn2.update_idletasks()
 
+        btn3 = tk.Button(selectedFrame, text="Insert selected", relief=tk.GROOVE)
+        btn3.pack(fill="x", padx=15, pady=10, ipadx=15, ipady=15, in_=selectedFrame)
+
         root.mainloop()
 
 
 def main():
-    app = Application(1280, 720, "Alennukset")
+    app = Application(1280, 720, "Discounts")
     app.window()
 
 
